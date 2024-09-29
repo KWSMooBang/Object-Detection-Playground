@@ -25,10 +25,16 @@ class ResNet(Backbone):
         super(ResNet, self).__init__()
 
         resnet = eval("models.{0}(weights={1})".format(model, "'DEFAULT'" if pretrained else None))
+
+        if out_features is None:
+            out_features = []
         return_nodes = {
             'layer'+str(int(f[3])-1): f
             for f in out_features
         }
+        out_features.append('stem')
+        return_nodes['maxpool'] = 'stem'
+
         if num_classes is not None:
             resnet.fc.out_features = num_classes
             return_nodes['fc'] = 'linear'
